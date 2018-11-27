@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<schema targetNamespace="http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15"
+<schema targetNamespace="http://schema.primaresearch.org/PAGE/gts/pagecontent/2018-07-15"
 	elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:pc="http://schema.primaresearch.org/PAGE/gts/pagecontent/2017-07-15">
+	xmlns:pc="http://schema.primaresearch.org/PAGE/gts/pagecontent/2018-07-15" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
     <element name="PcGts" type="pc:PcGtsType">
 		<annotation>
@@ -36,12 +36,104 @@
 			<element name="Comments" type="string" minOccurs="0"
 				maxOccurs="1">
 			</element>
-			<element name="UserDefined" type="pc:UserDefinedType" minOccurs="0" maxOccurs="1"></element>
-		</sequence>
+            <element name="UserDefined" type="pc:UserDefinedType"
+				minOccurs="0" maxOccurs="1">
+			</element>
+            <element name="MetadataItem" type="pc:MetadataItemType" minOccurs="0" maxOccurs="unbounded"></element>
+        </sequence>
 		<attribute name="externalRef" type="string" use="optional">
 			<annotation>
 				<documentation>External reference of any kind</documentation>
 			</annotation></attribute>
+	</complexType>
+	<complexType name="MetadataItemType">
+		<sequence>
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation></element>
+		</sequence>
+		<attribute name="type" use="optional">
+			<annotation>
+				<documentation>
+					Type of metadata (e.g. author)
+				</documentation>
+			</annotation>
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="author"></enumeration>
+					<enumeration value="imageProperties"></enumeration>
+					<enumeration value="processingStep"></enumeration>
+					<enumeration value="other"></enumeration>
+				</restriction>
+			</simpleType>
+		</attribute>
+		<attribute name="name" type="string" use="optional">
+			<annotation>
+				<documentation>
+					E.g. imagePhotometricInterpretation
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="value" type="string" use="required">
+			<annotation>
+				<documentation>E.g. RGB</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="date" type="dateTime"></attribute>
+	</complexType>
+	<complexType name="LabelsType">
+		<sequence>
+			<element name="Label" type="pc:LabelType" minOccurs="0"
+				maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						A semantic label / tag
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="externalModel" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Reference to external model / ontology / schema
+				</documentation>
+			</annotation>
+		</attribute>
+        <attribute name="externalId" type="string" use="optional">
+			<annotation>
+				<documentation>E.g. an RDF resource identifier (to be used as subject or object of an RDF triple)</documentation>
+			</annotation></attribute>
+        <attribute name="prefix" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Prefix for all labels (e.g. first part of an URI)
+				</documentation>
+			</annotation>
+		</attribute>
+        <attribute name="comments" type="string" use="optional">
+		</attribute>
+	</complexType>
+	<complexType name="LabelType">
+        <annotation>
+        	<documentation>Semantic label</documentation>
+        </annotation>
+        <attribute name="value" type="string" use="required">
+			<annotation>
+				<documentation>
+					The label / tag (e.g. 'person'). Can be an RDF resource identifier (e.g. object of an RDF triple).
+				</documentation>
+			</annotation>
+        </attribute>
+		<attribute name="type" type="string" use="optional">
+			<annotation>
+				<documentation>
+					Additional information on the label (e.g. 'YYYY-mm-dd' for a date label). Can be used as predicate of an RDF triple.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="comments" type="string" use="optional">
+		</attribute>
 	</complexType>
 	<complexType name="PageType">
 		<sequence>
@@ -81,6 +173,12 @@
 				minOccurs="0">
 			</element>
             <element name="UserDefined" type="pc:UserDefinedType" minOccurs="0" maxOccurs="1"></element>
+            <element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>
+            
             <choice minOccurs="0" maxOccurs="unbounded">
 				<element name="TextRegion" type="pc:TextRegionType"></element>
 				<element name="ImageRegion" type="pc:ImageRegionType">
@@ -95,6 +193,7 @@
 				</element>
 				<element name="ChartRegion" type="pc:ChartRegionType">
 				</element>
+				<element name="MapRegion" type="pc:MapRegionType"></element>
 				<element name="SeparatorRegion"
 					type="pc:SeparatorRegionType">
 				</element>
@@ -110,23 +209,61 @@
 				<element name="UnknownRegion"
 					type="pc:UnknownRegionType">
 				</element>
+				<element name="CustomRegion"
+					type="pc:CustomRegionType">
+				</element>
 			</choice>
 
 		</sequence>
-		<attribute name="imageFilename" type="string" use="required"></attribute>
-		<attribute name="imageWidth" type="int" use="required"></attribute>
-		<attribute name="imageHeight" type="int" use="required"></attribute>
-		<attribute name="imageXResolution" type="int" use="optional"></attribute>
-	        <attribute name="imageYResolution" type="int" use="optional"></attribute>
-	        <attribute name="imageCompression" type="string" use="optional"></attribute>
-	        <attribute name="imagePhotometricInterpretation" type="string" use="optional"></attribute>
-	        <attribute name="imageResolutionUnit" type="string" use="optional"></attribute>
-		<attribute name="custom" type="string">
-			<annotation>
-				<documentation>For generic use</documentation>
-			</annotation>
-		</attribute>
-		<attribute name="type" type="pc:PageTypeSimpleType">
+		<attribute name="imageFilename" type="string" use="required">
+        <annotation>
+           <documentation>
+           Contains the image file name including the file extension.
+           </documentation>
+        </annotation>
+        </attribute>
+	<attribute name="imageWidth" type="int" use="required">
+	    <annotation>
+	    <documentation>Specifies the width of the image.</documentation>
+	    </annotation>
+	</attribute>
+	<attribute name="imageHeight" type="int" use="required">
+	    <annotation>
+	    <documentation>Specifies the height of the image.</documentation>
+	    </annotation>
+	</attribute>
+	<attribute name="imageXResolution" type="float" use="optional">
+	    <annotation>
+	    <documentation>Specifies the image resolution in width.</documentation>
+            </annotation>
+	</attribute>
+	<attribute name="imageYResolution" type="float" use="optional">
+	    <annotation>
+	    <documentation>Specifies the image resolution in height.</documentation>
+	    </annotation>
+        </attribute>
+	<attribute name="imageResolutionUnit" use="optional">
+		<annotation>
+			<documentation>
+				Specifies the unit of the resolution information
+				referring to a standardised unit of measurement (pixels per inch, pixels per centimeter or other).
+			</documentation>
+		</annotation>
+		<simpleType>
+			<restriction base="string">
+
+				<enumeration value="PPI"></enumeration>
+				<enumeration value="PPCM"></enumeration>
+				<enumeration value="other"></enumeration>
+			</restriction>
+		</simpleType>
+	</attribute>
+	<attribute name="custom" type="string">
+	    <annotation>
+		<documentation>For generic use</documentation>
+	    </annotation>
+	</attribute>
+	<attribute name="type" type="pc:PageTypeSimpleType">
             <annotation>
             	<documentation>Page type</documentation>
             </annotation>
@@ -178,6 +315,12 @@
 				<documentation>Inner-block order of text lines (in addition to “readingDirection” which is the inner-text line order of words and characters) (lower-level definitions override the page-level definition)</documentation>
 			</annotation>
 		</attribute>
+		<attribute name="conf" type="pc:ConfSimpleType" use="optional">
+            <annotation>
+            	<documentation>Confidence value for whole page (between 0 and 1)</documentation>
+            </annotation>
+		</attribute>
+		
 	</complexType>
 	<complexType name="TextRegionType">
 		<annotation>
@@ -298,9 +441,24 @@ Range: -179.999,180</documentation>
             	<documentation>Point list with format "x1,y1 x2,y2 ..."</documentation>
             </annotation>
 		</attribute>
+		<attribute name="conf" type="pc:ConfSimpleType" use="optional">
+            <annotation>
+            	<documentation>Confidence value (between 0 and 1)</documentation>
+            </annotation>
+		</attribute>
 	</complexType>
 	<complexType name="TextLineType">
 		<sequence>
+			<element name="AlternativeImage"
+				type="pc:AlternativeImageType" minOccurs="0"
+				maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						Alternative text line images (e.g.
+						black-and-white)
+					</documentation>
+				</annotation>
+			</element>
 			<element name="Coords" type="pc:CoordsType"></element>
 			<element name="Baseline" type="pc:BaselineType"
 				minOccurs="0">
@@ -321,6 +479,11 @@ Range: -179.999,180</documentation>
 				minOccurs="0">
 			</element>
 			<element name="UserDefined" type="pc:UserDefinedType" minOccurs="0" maxOccurs="1"></element>
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>			
 		</sequence>
 		<attribute name="id" type="ID" use="required"></attribute>
 		<attribute name="primaryLanguage"
@@ -370,9 +533,28 @@ Range: -179.999,180</documentation>
 			</annotation>
 		</attribute>
 		<attribute name="comments" type="string"></attribute>
+		<attribute name="index" type="int" use="optional">
+			<annotation>
+				<documentation>
+					Position (order number) of this text line within the
+					parent text region.
+				</documentation>
+			</annotation>
+		</attribute>
+		
 	</complexType>
 	<complexType name="WordType">
 		<sequence>
+			<element name="AlternativeImage"
+				type="pc:AlternativeImageType" minOccurs="0"
+				maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						Alternative word images (e.g.
+						black-and-white)
+					</documentation>
+				</annotation>
+			</element>
 			<element name="Coords" type="pc:CoordsType"></element>
 			<element name="Glyph" type="pc:GlyphType" minOccurs="0"
 				maxOccurs="unbounded">
@@ -384,6 +566,11 @@ Range: -179.999,180</documentation>
 				minOccurs="0">
 			</element>
 			<element name="UserDefined" type="pc:UserDefinedType" minOccurs="0" maxOccurs="1"></element>
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>			
 		</sequence>
 		<attribute name="id" type="ID" use="required"></attribute>
 		<attribute name="language" type="pc:LanguageSimpleType">
@@ -435,6 +622,16 @@ Range: -179.999,180</documentation>
 	</complexType>
 	<complexType name="GlyphType">
 		<sequence>
+			<element name="AlternativeImage"
+				type="pc:AlternativeImageType" minOccurs="0"
+				maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						Alternative glyph images (e.g.
+						black-and-white)
+					</documentation>
+				</annotation>
+			</element>
 			<element name="Coords" type="pc:CoordsType"></element>
 			<element name="Graphemes" type="pc:GraphemesType"
 				minOccurs="0" maxOccurs="1">
@@ -452,6 +649,11 @@ Range: -179.999,180</documentation>
 				minOccurs="0">
 			</element>
 			<element name="UserDefined" type="pc:UserDefinedType" minOccurs="0" maxOccurs="1"></element>
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>
 		</sequence>
 		<attribute name="id" type="ID" use="required"></attribute>
 		<attribute name="ligature" use="optional" type="boolean">
@@ -514,16 +716,10 @@ Range: -179.999,180</documentation>
 				</restriction>
 			</simpleType>
 		</attribute>
-		<attribute name="conf">
+		<attribute name="conf" type="pc:ConfSimpleType" use="optional">
             <annotation>
             	<documentation>OCR confidence value (between 0 and 1)</documentation>
             </annotation>
-            <simpleType>
-            	<restriction base="float">
-            		<minInclusive value="0"></minInclusive>
-            		<maxInclusive value="1"></maxInclusive>
-            	</restriction>
-            </simpleType>
 		</attribute>
 		<attribute name="dataType" type="pc:TextDataTypeSimpleType" use="optional">
 				<annotation>
@@ -692,11 +888,23 @@ Range: -179.999,180</documentation>
 		</annotation>
 		<complexContent>
 			<extension base="pc:RegionType">
+				<sequence>
+					<element name="Grid" type="pc:GridType" minOccurs="0" maxOccurs="1">
+						<annotation>
+							<documentation>Table grid (visible or virtual grid lines)</documentation>
+						</annotation></element>
+				</sequence>
 				<attribute name="orientation" type="float"
 					use="optional">
 					<annotation>
-						<documentation>The angle the rectangle encapsulating a region has to be rotated in clockwise direction in order to correct the present skew (negative values indicate anti-clockwise rotation).
-Range: -179.999,180</documentation>
+						<documentation>
+							The angle the rectangle encapsulating a
+							region has to be rotated in clockwise
+							direction in order to correct the present
+							skew (negative values indicate
+							anti-clockwise rotation). Range:
+							-179.999,180
+						</documentation>
 					</annotation>
 				</attribute>
 				<attribute name="rows" type="int" use="optional">
@@ -749,6 +957,31 @@ Range: -179.999,180</documentation>
 			</extension>
 		</complexContent>
 	</complexType>
+	<complexType name="GridType">
+        <annotation>
+        	<documentation>Matrix of grid points defining the table grid on the page</documentation>
+        </annotation>
+        <sequence>
+            <element name="GridPoints" type="pc:GridPointsType" minOccurs="2" maxOccurs="unbounded">
+            	<annotation>
+            		<documentation>One row in the grid point matrix. Points with x,y coordinates. (note: for a table with n table rows there should be n+1 grid rows)</documentation>
+            	</annotation></element>
+		</sequence>
+	</complexType>
+	<complexType name="GridPointsType">
+        <annotation>
+        	<documentation>Points with x,y coordinates.</documentation>
+        </annotation>
+		<attribute name="index" type="int" use="required">
+			<annotation>
+				<documentation>
+					The grid row index
+				</documentation>
+			</annotation>
+		</attribute>
+        <attribute name="points" type="pc:PointsType" use="required"></attribute>
+	</complexType>
+	
 	<complexType name="ChartRegionType">
 		<annotation>
 			<documentation>
@@ -891,6 +1124,30 @@ Range: -179.999,180</documentation>
 			</extension>
 		</complexContent>
 	</complexType>
+	<complexType name="MapRegionType">
+		<annotation>
+			<documentation>
+				Regions containing maps.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="pc:RegionType">
+				<attribute name="orientation" type="float"
+					use="optional">
+					<annotation>
+						<documentation>
+							The angle the rectangle encapsulating a
+							region has to be rotated in clockwise
+							direction in order to correct the present
+							skew (negative values indicate
+							anti-clockwise rotation). Range:
+							-179.999,180
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
 	<complexType name="MusicRegionType">
 		<annotation>
 			<documentation>
@@ -966,6 +1223,25 @@ Range: -179.999,180
 			<extension base="pc:RegionType"></extension>
 		</complexContent>
 	</complexType>
+	<complexType name="CustomRegionType">
+		<annotation>
+			<documentation>
+				Regions containing content that is not covered by the default types (text, graphic, image, line drawing, chart, table, separator, maths, map, music, chem, advert, noise, unknown)
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="pc:RegionType">
+				<attribute name="type" use="optional"
+					type="string">
+					<annotation>
+						<documentation>
+							Information on the type of content represented by this region
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
 
 	<complexType name="PrintSpaceType">
         <annotation>
@@ -983,10 +1259,18 @@ It does not contain pagenumber (if not part of running title), marginals, signat
         <annotation>
         	<documentation>Definition of the reading order within the page. To express a reading order between elements they have to be included in an OrderedGroup. Groups may contain further groups.</documentation>
         </annotation>
+        
         <choice minOccurs="1" maxOccurs="1">
             <element name="OrderedGroup" type="pc:OrderedGroupType"></element>
             <element name="UnorderedGroup" type="pc:UnorderedGroupType"></element>
 		</choice>
+		
+		<attribute name="conf" type="pc:ConfSimpleType" use="optional">
+            <annotation>
+            	<documentation>Confidence value (between 0 and 1)</documentation>
+            </annotation>
+		</attribute>
+		
 	</complexType>
 
 	<complexType name="RegionRefIndexedType">
@@ -1010,7 +1294,11 @@ It does not contain pagenumber (if not part of running title), marginals, signat
 			<element name="UserDefined" type="pc:UserDefinedType"
 				minOccurs="0" maxOccurs="1">
 			</element>
-
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>
 			<choice minOccurs="1" maxOccurs="unbounded">
 				<element name="RegionRefIndexed"
 					type="pc:RegionRefIndexedType">
@@ -1059,6 +1347,11 @@ It does not contain pagenumber (if not part of running title), marginals, signat
 			<element name="UserDefined" type="pc:UserDefinedType"
 				minOccurs="0" maxOccurs="1">
 			</element>
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>
 			<choice minOccurs="1" maxOccurs="unbounded">
 				<element name="RegionRef" type="pc:RegionRefType"></element>
 				<element name="OrderedGroup"
@@ -1104,6 +1397,11 @@ It does not contain pagenumber (if not part of running title), marginals, signat
 			<element name="UserDefined" type="pc:UserDefinedType"
 				minOccurs="0" maxOccurs="1">
 			</element>
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>
 			<choice minOccurs="1" maxOccurs="unbounded">
 				<element name="RegionRefIndexed"
 					type="pc:RegionRefIndexedType">
@@ -1139,6 +1437,11 @@ It does not contain pagenumber (if not part of running title), marginals, signat
 		<sequence>
 			<element name="UserDefined" type="pc:UserDefinedType"
 				minOccurs="0" maxOccurs="1">
+			</element>
+			<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
 			</element>
 			<choice minOccurs="1" maxOccurs="unbounded">
 				<element name="RegionRef" type="pc:RegionRefType"></element>
@@ -1241,10 +1544,15 @@ It does not contain pagenumber (if not part of running title), marginals, signat
 			<enumeration value="other"></enumeration>
 		</restriction>
     </simpleType>
-    
+    <simpleType name="ConfSimpleType">
+    	<restriction base="float">
+         	<minInclusive value="0"></minInclusive>
+         	<maxInclusive value="1"></maxInclusive>
+        </restriction>
+    </simpleType>
     <simpleType name="LanguageSimpleType">
         <annotation>
-        	<documentation>iso15924 2016-07-14</documentation>
+        	<documentation> ISO 639.x 2016-07-14</documentation>
         </annotation>
         <restriction base="string">
 <enumeration value="Abkhaz"></enumeration>
@@ -1439,6 +1747,10 @@ It does not contain pagenumber (if not part of running title), marginals, signat
     </simpleType>
     
     <simpleType name="ScriptSimpleType">
+        <annotation>
+        	<documentation> iso15924 2016-07-14</documentation>
+        </annotation>
+    
     	<restriction base="string">
 <enumeration value="Adlm - Adlam"></enumeration>
 <enumeration value="Afak - Afaka"></enumeration>
@@ -1683,8 +1995,12 @@ It does not contain pagenumber (if not part of running title), marginals, signat
     
     <complexType name="BaselineType">
     	<attribute name="points" type="pc:PointsType" use="required"></attribute>
+		<attribute name="conf" type="pc:ConfSimpleType" use="optional">
+            <annotation>
+            	<documentation>Confidence value (between 0 and 1)</documentation>
+            </annotation>
+		</attribute>
     </complexType>
-
 
     <simpleType name="PointsType">
         <annotation>
@@ -1716,7 +2032,7 @@ It does not contain pagenumber (if not part of running title), marginals, signat
     			(where something is fragmented for instance).
 
     			Examples for 'link': caption - image floating -
-    			paragraph paragraph - paragraph (when a pragraph is
+    			paragraph paragraph - paragraph (when a paragraph is
     			split across columns and the last word of the first
     			paragraph DOES NOT continue in the second paragraph)
     			drop-cap - paragraph (when the drop-cap is a whole word)
@@ -1729,10 +2045,18 @@ It does not contain pagenumber (if not part of running title), marginals, signat
     			paragraph)
     		</documentation>
     	</annotation>
-    	<sequence minOccurs="2" maxOccurs="2">
-    		<element name="RegionRef" type="pc:RegionRefType"></element>
+    	
+    	<sequence>
+	    	<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>
+    		<element name="SourceRegionRef" type="pc:RegionRefType" minOccurs="1" maxOccurs="1"></element>
+    		<element name="TargetRegionRef" type="pc:RegionRefType" minOccurs="1" maxOccurs="1"></element>
     	</sequence>
-    	<attribute name="type" use="required">
+    	<attribute name="id" type="ID" use="required"></attribute>    	
+    	<attribute name="type" use="optional">
     		<simpleType>
     			<restriction base="string">
     				<enumeration value="link"></enumeration>
@@ -1840,10 +2164,25 @@ It does not contain pagenumber (if not part of running title), marginals, signat
 
     <complexType name="RegionType" abstract="true">
     	<sequence>
+			<element name="AlternativeImage"
+				type="pc:AlternativeImageType" minOccurs="0"
+				maxOccurs="unbounded">
+				<annotation>
+					<documentation>
+						Alternative region images (e.g.
+						black-and-white)
+					</documentation>
+				</annotation>
+			</element>
     		<element name="Coords" type="pc:CoordsType"></element>
     		<element name="UserDefined" type="pc:UserDefinedType"
     			minOccurs="0" maxOccurs="1">
     		</element>
+    		<element name="Labels" type="pc:LabelsType" minOccurs="0" maxOccurs="unbounded">
+				<annotation>
+					<documentation>Semantic labels / tags</documentation>
+				</annotation>
+			</element>    		
     		<element name="Roles" type="pc:RolesType" minOccurs="0"
     			maxOccurs="1">
     			<annotation>
@@ -1877,6 +2216,9 @@ It does not contain pagenumber (if not part of running title), marginals, signat
     			<element name="UnknownRegion"
     				type="pc:UnknownRegionType">
     			</element>
+    			<element name="CustomRegion"
+    				type="pc:CustomRegionType">
+    			</element>
     		</choice>
     	</sequence>
     	<attribute name="id" type="ID" use="required"></attribute>
@@ -1895,6 +2237,11 @@ It does not contain pagenumber (if not part of running title), marginals, signat
     <complexType name="AlternativeImageType">
     	<attribute name="filename" type="string" use="required"></attribute>
     	<attribute name="comments" type="string"></attribute>
+    	<attribute name="conf" type="pc:ConfSimpleType" use="optional">
+            <annotation>
+            	<documentation>Confidence value (between 0 and 1)</documentation>
+            </annotation>
+		</attribute>    	
     </complexType>
 
     <simpleType name="AlignSimpleType">
@@ -2129,6 +2476,13 @@ It does not contain pagenumber (if not part of running title), marginals, signat
     		<annotation>
     			<documentation>Number of columns the cell spans (optional; default is 1)</documentation>
     		</annotation></attribute>
+    	<attribute name="header" type="boolean" use="optional">
+			<annotation>
+				<documentation>
+					Is the cell a column or row header?
+				</documentation>
+			</annotation>
+		</attribute>    	
     </complexType>
 
     <complexType name="RolesType">
